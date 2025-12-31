@@ -104,10 +104,10 @@
               EOS
 
               echo building python
-              #buck2 build root//schemas/crds:generated_python --out tests/generated
+              buck2 build root//schemas/crds:generated_python --out tests/generated
 
               echo building kcl
-              #buck2 build root//schemas/crds:generated_kcl --out schemas/kcl
+              buck2 build root//schemas/crds:generated_kcl --out schemas/kcl
 
               xonsh
             '';

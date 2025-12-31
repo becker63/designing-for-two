@@ -100,6 +100,23 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/56/1c/c6483482bfe3f1d114f63b1b5fae80e8c1e14b26c021a2f3b81d6efd3de2/cloudcoil-0.5.8-py3-none-any.whl", hash = "sha256:079972bf0966cd202505b72d2bf6566892affd0e6b1faed04197d59d1b81d4ca", size = 71742, upload-time = "2025-05-31T21:37:32.826Z" },
 ]
 
+[package.optional-dependencies]
+kubernetes = [
+    { name = "cloudcoil-models-kubernetes" },
+]
+
+[[package]]
+name = "cloudcoil-models-kubernetes"
+version = "1.32.1.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "cloudcoil" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/86/5d/3b49375453c610b010f8c969503a5f7b1a3bca5b073551fd51b195522292/cloudcoil_models_kubernetes-1.32.1.3.tar.gz", hash = "sha256:a0ba052d756878bf50637553e9670e2ea102ba82a25f3b1da818d4d9426f051b", size = 364158, upload-time = "2025-02-10T04:25:01.948Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/44/7c/db13900309d57285e1724279e3dc00b89b9b2ba378ae0fd6a84b9120b896/cloudcoil_models_kubernetes-1.32.1.3-py3-none-any.whl", hash = "sha256:58353d789b12dce2620d67b1d70b62e2dc272a3a1a5d464f32de8c940db8ae6f", size = 349524, upload-time = "2025-02-10T04:25:00.351Z" },
+]
+
 [[package]]
 name = "colorama"
 version = "0.4.6"
@@ -237,6 +254,28 @@ wheels = [
 ]
 
 [[package]]
+name = "kcl-lib"
+version = "0.12.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "protobuf" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/68/4d/600010a137d657305b564f9c7e31114b1aa0118da19058aff8cbf54bd572/kcl_lib-0.12.3-cp312-cp312-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:f4bf2bb514793b2171a286309a50b872cce77a6f5234607e2d865d3622e42360", size = 15756193, upload-time = "2025-12-12T16:32:18.649Z" },
+    { url = "https://files.pythonhosted.org/packages/5d/09/f1bab8993d18faee482b37468e1c6ca3c43b38eca7de4bca9fa07bfef426/kcl_lib-0.12.3-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:53fa8bd27cb405e3c02300d1b2a69f8ee6d69dfa993695d10c7b37f912157eaa", size = 8370014, upload-time = "2025-12-12T16:32:21.054Z" },
+    { url = "https://files.pythonhosted.org/packages/93/c6/afd419c97beef20fa64ed7b6fb0dd4edfb35cbe364b62b8cbfe116903b1a/kcl_lib-0.12.3-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:72279079247f1903a0387ac1c78c69245c42f798c6d2512799f6533bdc448d0a", size = 8503496, upload-time = "2025-12-12T16:32:22.67Z" },
+    { url = "https://files.pythonhosted.org/packages/6c/b5/6f74ac12f326878f771e687130b533578e9b1563cf478c3874342e704aa8/kcl_lib-0.12.3-cp312-cp312-win_amd64.whl", hash = "sha256:10110ea67554d232a39fcdc5c65373c7017a355b360a3f5dca83a7ac2b31e33a", size = 7366800, upload-time = "2025-12-12T16:32:25.045Z" },
+    { url = "https://files.pythonhosted.org/packages/1e/e0/e179a6e81e25f093c1004fadd9bfbbadd12e043bfcde5ffda8a9e217b485/kcl_lib-0.12.3-cp313-cp313-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:c68dd74422f94b96209af54137bd4a37016efab90cde26a47ced9fc26ea9ff80", size = 15756191, upload-time = "2025-12-12T16:32:27.25Z" },
+    { url = "https://files.pythonhosted.org/packages/3c/53/dfefeefe35901d6c1f4ed54c65bcb7bd85a5f2f820fb0f9fee195d3d9b73/kcl_lib-0.12.3-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:e7bf5ec74cca87df5dc187371c0b1993a0470f57b7618fb00f634d440480ce61", size = 8370014, upload-time = "2025-12-12T16:32:29.698Z" },
+    { url = "https://files.pythonhosted.org/packages/3d/29/d758f6d45dc65ea4800bd6e7c05279b5ae2da792ba02d97ad1ed592d141f/kcl_lib-0.12.3-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:52b8124b48ff911b31e3d912b5d7121a6fda33fc572dd3f6c2b22f63d30c4f51", size = 8503496, upload-time = "2025-12-12T16:32:31.267Z" },
+    { url = "https://files.pythonhosted.org/packages/14/c8/889e6ecae899475d037fdf482a60383cf328a20b5405b1ca39b3c9bb6e41/kcl_lib-0.12.3-cp313-cp313-win_amd64.whl", hash = "sha256:cc36ab1ff1b2a09469749fe806996281c9fb88d1764cba123e9ba6f22988ebfd", size = 7366840, upload-time = "2025-12-12T16:32:33.386Z" },
+    { url = "https://files.pythonhosted.org/packages/6f/c3/df4a183f5ea3b349cdf434540610a37cbc4132a260062dd7778c6d051e21/kcl_lib-0.12.3-cp314-cp314-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:61c37f77e87e68737716368625c97487301785ac493903e283b9a53014ee0874", size = 15756193, upload-time = "2025-12-12T16:32:35.058Z" },
+    { url = "https://files.pythonhosted.org/packages/3b/b1/e04af636528306cc27d570faebb41c1933113512bcfdf657339cef465fc8/kcl_lib-0.12.3-cp314-cp314-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:1b3d9053622815aec3aabcb283b7b8276422c1446b05d857d4544fed1090bffb", size = 8370013, upload-time = "2025-12-12T16:32:38.254Z" },
+    { url = "https://files.pythonhosted.org/packages/ca/94/c1a8b00d348b444667b68ab6f55154f2b0d62403053834720df47e2a1f37/kcl_lib-0.12.3-cp314-cp314-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2610d6a86d045db9fad93f7344c11d2631d1fab0487392d1e90657c9217055de", size = 8503494, upload-time = "2025-12-12T16:32:40.07Z" },
+    { url = "https://files.pythonhosted.org/packages/a0/b2/13178d32d5f5623d58c12689cb0df7ed42fd0ed1e6e3d9581cff833852a6/kcl_lib-0.12.3-cp314-cp314-win_amd64.whl", hash = "sha256:f4d0769f7612c0339370a2871171f35ce089db24ea3d675942276298b0faf617", size = 7366842, upload-time = "2025-12-12T16:32:43.751Z" },
+]
+
+[[package]]
 name = "markdown-it-py"
 version = "4.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -334,18 +373,20 @@ name = "myproject"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
-    { name = "cloudcoil" },
+    { name = "cloudcoil", extra = ["kubernetes"] },
     { name = "datamodel-code-generator" },
     { name = "filelock" },
+    { name = "kcl-lib" },
     { name = "pytest" },
     { name = "typer" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "cloudcoil" },
+    { name = "cloudcoil", extras = ["kubernetes"] },
     { name = "datamodel-code-generator", specifier = ">=0.42.2" },
     { name = "filelock", specifier = ">=3.20.0" },
+    { name = "kcl-lib", specifier = ">=0.12.3" },
     { name = "pytest", specifier = ">=9.0.2" },
     { name = "typer", specifier = ">=0.20.0" },
 ]
@@ -393,6 +434,21 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/f9/e2/3e91f31a7d2b083fe6ef3fa267035b518369d9511ffab804f839851d2779/pluggy-1.6.0.tar.gz", hash = "sha256:7dcc130b76258d33b90f61b658791dede3486c3e6bfb003ee5c9bfb396dd22f3", size = 69412, upload-time = "2025-05-15T12:30:07.975Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/54/20/4d324d65cc6d9205fabedc306948156824eb9f0ee1633355a8f7ec5c66bf/pluggy-1.6.0-py3-none-any.whl", hash = "sha256:e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746", size = 20538, upload-time = "2025-05-15T12:30:06.134Z" },
+]
+
+[[package]]
+name = "protobuf"
+version = "6.33.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/34/44/e49ecff446afeec9d1a66d6bbf9adc21e3c7cea7803a920ca3773379d4f6/protobuf-6.33.2.tar.gz", hash = "sha256:56dc370c91fbb8ac85bc13582c9e373569668a290aa2e66a590c2a0d35ddb9e4", size = 444296, upload-time = "2025-12-06T00:17:53.311Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/bc/91/1e3a34881a88697a7354ffd177e8746e97a722e5e8db101544b47e84afb1/protobuf-6.33.2-cp310-abi3-win32.whl", hash = "sha256:87eb388bd2d0f78febd8f4c8779c79247b26a5befad525008e49a6955787ff3d", size = 425603, upload-time = "2025-12-06T00:17:41.114Z" },
+    { url = "https://files.pythonhosted.org/packages/64/20/4d50191997e917ae13ad0a235c8b42d8c1ab9c3e6fd455ca16d416944355/protobuf-6.33.2-cp310-abi3-win_amd64.whl", hash = "sha256:fc2a0e8b05b180e5fc0dd1559fe8ebdae21a27e81ac77728fb6c42b12c7419b4", size = 436930, upload-time = "2025-12-06T00:17:43.278Z" },
+    { url = "https://files.pythonhosted.org/packages/b2/ca/7e485da88ba45c920fb3f50ae78de29ab925d9e54ef0de678306abfbb497/protobuf-6.33.2-cp39-abi3-macosx_10_9_universal2.whl", hash = "sha256:d9b19771ca75935b3a4422957bc518b0cecb978b31d1dd12037b088f6bcc0e43", size = 427621, upload-time = "2025-12-06T00:17:44.445Z" },
+    { url = "https://files.pythonhosted.org/packages/7d/4f/f743761e41d3b2b2566748eb76bbff2b43e14d5fcab694f494a16458b05f/protobuf-6.33.2-cp39-abi3-manylinux2014_aarch64.whl", hash = "sha256:b5d3b5625192214066d99b2b605f5783483575656784de223f00a8d00754fc0e", size = 324460, upload-time = "2025-12-06T00:17:45.678Z" },
+    { url = "https://files.pythonhosted.org/packages/b1/fa/26468d00a92824020f6f2090d827078c09c9c587e34cbfd2d0c7911221f8/protobuf-6.33.2-cp39-abi3-manylinux2014_s390x.whl", hash = "sha256:8cd7640aee0b7828b6d03ae518b5b4806fdfc1afe8de82f79c3454f8aef29872", size = 339168, upload-time = "2025-12-06T00:17:46.813Z" },
+    { url = "https://files.pythonhosted.org/packages/56/13/333b8f421738f149d4fe5e49553bc2a2ab75235486259f689b4b91f96cec/protobuf-6.33.2-cp39-abi3-manylinux2014_x86_64.whl", hash = "sha256:1f8017c48c07ec5859106533b682260ba3d7c5567b1ca1f24297ce03384d1b4f", size = 323270, upload-time = "2025-12-06T00:17:48.253Z" },
+    { url = "https://files.pythonhosted.org/packages/0e/15/4f02896cc3df04fc465010a4c6a0cd89810f54617a32a70ef531ed75d61c/protobuf-6.33.2-py3-none-any.whl", hash = "sha256:7636aad9bb01768870266de5dc009de2d1b936771b38a793f73cbbf279c91c5c", size = 170501, upload-time = "2025-12-06T00:17:52.211Z" },
 ]
 
 [[package]]

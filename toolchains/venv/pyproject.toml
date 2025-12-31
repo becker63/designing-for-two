@@ -3,9 +3,10 @@ name = "myproject"
 version = "0.1.0"
 requires-python = ">=3.12"
 dependencies = [
-    "cloudcoil",
+    "cloudcoil[kubernetes]",
     "datamodel-code-generator>=0.42.2",
     "filelock>=3.20.0",
+    "kcl-lib>=0.12.3",
     "pytest>=9.0.2",
     "typer>=0.20.0",
 ]  # shared deps for both entrypoints

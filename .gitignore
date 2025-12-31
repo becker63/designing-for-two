@@ -10,5 +10,6 @@ repomix-output.xml
 
 # Generated sources are reproducible via hermetic tooling and intentionally not checked in
 schemas/kcl
+schemas/crds
 tests/generated/**
 !tests/generated/.keep
