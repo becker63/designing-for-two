@@ -1,0 +1,4 @@
+python_bootstrap_binary(
+    name = "test",
+    main = "run_pytest.py",
+)

@@ -1,0 +1,54 @@
+load("@nix//:flake.bzl", "flake")
+load("@nix//toolchains:python.bzl", "nix_python_bootstrap_toolchain")
+
+_TARGET_MAPPING = [
+    select({k: k for k in ["config//os:linux", "config//os:macos"]}),
+    select({k: k for k in ["config//cpu:arm64", "config//cpu:x86_64"]}),
+]
+
+flake.package(
+    name = "python",
+    binary = "python",
+    package = "default",
+    path = ".",
+    target_compatible_with = _TARGET_MAPPING,
+)
+
+nix_python_bootstrap_toolchain(
+    name = "python_bootstrap",
+    python = ":python",
+    visibility = ["PUBLIC"],
+)
+
+
+flake.package(
+    name = "ruff",
+    path = ".",
+    package = "ruff",
+    binary = "ruff",
+    visibility = ["PUBLIC"],
+)
+
+flake.package(
+    name = "kcl",
+    path = ".",
+    package = "kcl",
+    binary = "kcl",
+    visibility = ["PUBLIC"],
+)
+
+flake.package(
+    name = "go-schema-kcl",
+    path = ".",
+    package = "go-schema-kcl",
+    binary = "go-schema-kcl",
+    visibility = ["PUBLIC"],
+)
+
+flake.package(
+    name = "python-crd-cloudcoil",
+    path = ".",
+    package = "python-crd-cloudcoil",
+    binary = "python-crd-cloudcoil",
+    visibility = ["PUBLIC"],
+)

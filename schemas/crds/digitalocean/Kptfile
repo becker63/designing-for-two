@@ -1,0 +1,18 @@
+apiVersion: kpt.dev/v1
+kind: Kptfile
+metadata:
+  name: digitalocean
+upstream:
+  type: git
+  git:
+    repo: https://github.com/crossplane-contrib/provider-upjet-digitalocean
+    directory: /package/crds
+    ref: main
+  updateStrategy: resource-merge
+upstreamLock:
+  type: git
+  git:
+    repo: https://github.com/crossplane-contrib/provider-upjet-digitalocean
+    directory: /package/crds
+    ref: main
+    commit: 571a2fa00abe886c23896677d80873b97121101c

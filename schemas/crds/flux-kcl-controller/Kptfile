@@ -1,0 +1,18 @@
+apiVersion: kpt.dev/v1
+kind: Kptfile
+metadata:
+  name: flux-kcl-controller
+upstream:
+  type: git
+  git:
+    repo: https://github.com/kcl-lang/flux-kcl-controller
+    directory: /config/crd/bases
+    ref: main
+  updateStrategy: resource-merge
+upstreamLock:
+  type: git
+  git:
+    repo: https://github.com/kcl-lang/flux-kcl-controller
+    directory: /config/crd/bases
+    ref: main
+    commit: 6fe93f9dfec57174d6acc78ef261197dfb707f2e

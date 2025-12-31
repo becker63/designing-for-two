@@ -1,0 +1,18 @@
+apiVersion: kpt.dev/v1
+kind: Kptfile
+metadata:
+  name: infisical
+upstream:
+  type: git
+  git:
+    repo: https://github.com/Infisical/kubernetes-operator
+    directory: /config/crd/bases
+    ref: main
+  updateStrategy: resource-merge
+upstreamLock:
+  type: git
+  git:
+    repo: https://github.com/Infisical/kubernetes-operator
+    directory: /config/crd/bases
+    ref: main
+    commit: 29d95799e0fefacf4f4d0f8496cbb0c72b829ad7

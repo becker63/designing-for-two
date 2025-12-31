@@ -1,0 +1,14 @@
+/buck-out
+/.buckconfig.local
+/.buckconfig.d
+/.envrc.private
+/.direnv
+/.pytest_cache
+__pycache__
+.ruff_cache
+repomix-output.xml
+
+# Generated sources are reproducible via hermetic tooling and intentionally not checked in
+schemas/kcl
+tests/generated/**
+!tests/generated/.keep

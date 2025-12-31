@@ -1,0 +1,11 @@
+apiVersion: kpt.dev/v1
+kind: Kptfile
+metadata:
+  name: function-kcl
+upstream:
+  type: git
+  git:
+    repo: https://github.com/crossplane-contrib/function-kcl
+    directory: /
+    ref: main/package/input
+  updateStrategy: resource-merge

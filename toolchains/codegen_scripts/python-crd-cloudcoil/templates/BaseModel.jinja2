@@ -1,0 +1,167 @@
+{% for decorator in decorators -%}
+{{ decorator }}
+{% endfor -%}
+{%- if is_list %}
+{{ class_name }} = ResourceList["{{ class_name.replace('List', '') }}"]
+{%- else %}
+{%- if is_gvk %}
+class {{ class_name }}(Resource):{% if comment is defined %}  # {{ comment }}{% endif %}
+{%- else %}
+class {{ class_name }}(BaseModel):{% if comment is defined %}  # {{ comment }}{% endif %}
+{%- endif %}
+{%- if description %}
+    """
+    {{ description | replace("\t", " "*4) | trim | indent(4) }}
+    """
+{%- endif %}
+
+    class Builder(BaseModelBuilder):
+
+        @property
+        def cls(self) -> Type["{{ class_name }}"]:
+            return {{ class_name }}
+            
+        def build(self) -> "{{ class_name }}":
+            return {{ class_name }}(**self._attrs)
+
+    {%- for field in fields %}
+        {%- set field_setter_name = field.name if field.name != "build" else "build_" %}
+        {%- if field.data_type.data_types and field.data_type.data_types[0].is_list  %}
+        {%- set item_type = field.data_type.data_types[0].data_types[0] %}
+        {%- if item_type.reference is not none %}
+        @overload
+        def {{ field_setter_name }}(self, value_or_callback: List[{{ item_type.type_hint }}], /) -> "{{ class_name }}.Builder": ...
+        
+        @overload
+        def {{ field_setter_name }}(self, value_or_callback: Callable[[GenericListBuilder[{{ item_type.type_hint }}, {{ item_type.type_hint }}.Builder]], GenericListBuilder[{{ item_type.type_hint }}, {{ item_type.type_hint }}.Builder] | List[{{ item_type.type_hint }}]], /) -> "{{ class_name }}.Builder": ...
+        
+        @overload
+        def {{ field_setter_name }}(self, value_or_callback: Never = ...) -> ListBuilderContext[{{ item_type.type_hint }}.Builder]: ...
+        
+        def {{ field_setter_name }}(self, value_or_callback=None, /):
+            {%- if field.docstring %}
+            """
+            {{ field.docstring | replace("\t", " "*4) | trim | indent(12) }}
+            """
+            {%- endif %}
+            if self._in_context and value_or_callback is None:
+                context = ListBuilderContext[{{ item_type.type_hint }}.Builder]()
+                context._parent_builder = self
+                context._field_name = "{{ field.name }}"
+                return context
+
+            value = value_or_callback
+            if callable(value_or_callback):
+                output = value_or_callback({{ item_type.type_hint }}.list_builder())
+                if isinstance(output, GenericListBuilder):
+                    value = output.build()
+                else:
+                    value = output
+            return self._set("{{ field.name }}", value)
+        {%- else %}
+        def {{ field_setter_name }}(self, value: {{ field.type_hint }}, /) -> Self:
+            {%- if field.docstring %}
+            """
+            {{ field.docstring | replace("\t", " "*4) | trim | indent(12) }}
+            """
+            {%- endif %}
+            return self._set("{{ field.name }}", value)
+        {%- endif %}
+        {%- else %}
+        {%- if field.data_type.reference is not none %}
+        @overload
+        def {{ field_setter_name }}(self, value_or_callback: {{ field.type_hint }}, /) -> "{{ class_name }}.Builder": ...
+        
+        @overload
+        def {{ field_setter_name }}(self, value_or_callback: Callable[[{{ field.data_type.type_hint }}.Builder], {{ field.data_type.type_hint }}.Builder | {{ field.data_type.type_hint }}], /) -> "{{ class_name }}.Builder": ...
+        
+        @overload
+        def {{ field_setter_name }}(self, value_or_callback: Never = ...) -> "{{ field.data_type.type_hint }}.BuilderContext": ...
+        
+        def {{ field_setter_name }}(self, value_or_callback=None, /):
+            {%- if field.docstring %}
+            """
+            {{ field.docstring | replace("\t", " "*4) | trim | indent(12) }}
+            """
+            {%- endif %}
+            if self._in_context and value_or_callback is None:
+                context = {{ field.data_type.type_hint }}.BuilderContext()
+                context._parent_builder = self
+                context._field_name = "{{ field.name }}"
+                return context
+
+            value = value_or_callback
+            if callable(value_or_callback):
+                output = value_or_callback({{ field.data_type.type_hint }}.builder())
+                if isinstance(output, {{ field.data_type.type_hint }}.Builder):
+                    value = output.build()
+                else:
+                    value = output
+            return self._set("{{ field.name }}", value)
+        {%- else %}
+        def {{ field_setter_name }}(self, value: {{ field.type_hint }}, /) -> Self:
+            {%- if field.docstring %}
+            """
+            {{ field.docstring | replace("\t", " "*4) | trim | indent(12) }}
+            """
+            {%- endif %}
+            return self._set("{{ field.name }}", value)
+        {%- endif %}
+        {%- endif %}
+    {%- endfor %}
+
+    class BuilderContext(BuilderContextBase["{{ class_name }}.Builder"]):
+        def model_post_init(self, __context) -> None:
+            self._builder = {{ class_name }}.Builder()
+            self._builder._in_context = True
+            self._parent_builder = None
+            self._field_name = None
+
+    @classmethod
+    def builder(cls) -> Builder:
+        return cls.Builder()
+        
+    @classmethod
+    def new(cls) -> BuilderContext:
+        """Creates a new context manager builder for {{ class_name }}."""
+        return cls.BuilderContext()
+
+    class ListBuilder(GenericListBuilder["{{class_name}}", Builder]):
+        def __init__(self):
+            raise NotImplementedError("This class is not meant to be instantiated. Use {{ class_name }}.list_builder() instead.")
+
+    @classmethod
+    def list_builder(cls) -> ListBuilder:
+        return GenericListBuilder[cls, cls.Builder]()  # type: ignore
+
+{%- if not fields and not description %}
+    pass
+{%- endif %}
+{%- if config %}
+{%- filter indent(4) %}
+{% include 'ConfigDict.jinja2' %}
+{%- endfilter %}
+{%- endif %}
+{%- for field in fields -%}
+    {%- if not field.annotated and field.field %}
+    {{ field.name }}: {{ field.type_hint }} = {{ field.field }}
+    {%- else %}
+    {%- if field.annotated %}
+    {{ field.name }}: {{ field.annotated }}
+    {%- else %}
+    {{ field.name }}: {{ field.type_hint }}
+    {%- endif %}
+    {%- if not (field.required or (field.represented_default == 'None' and field.strip_default_none)) or field.data_type.is_optional
+            %} = {% if field.represented_default == "{}" and field.data_type.reference is not none %}{{ field.data_type.type_hint }}.model_validate({{ field.represented_default }}){% else %}{{ field.represented_default }}{% endif %}
+    {%- endif -%}
+    {%- endif %}
+    {%- if field.docstring %}
+    """
+    {{ field.docstring | replace("\t", " "*4) | trim | indent(4) }}
+    """
+    {%- endif %}
+{%- for method in methods -%}
+    {{ method }}
+{%- endfor -%}
+{%- endfor -%}
+{%- endif -%}

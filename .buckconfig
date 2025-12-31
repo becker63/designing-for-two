@@ -1,0 +1,28 @@
+[cells]
+  root = .
+  prelude = prelude
+  toolchains = toolchains
+  hsconfig = config
+  none = none
+  nix = none
+
+[cell_aliases]
+  config = prelude
+  ovr_config = prelude
+  fbcode = none
+  fbsource = none
+  fbcode_macros = none
+  buck = none
+
+[external_cells]
+  prelude = bundled
+  nix = git
+
+[parser]
+  target_platform_detector_spec = target:root//...->prelude//platforms:default
+
+[project]
+  ignore = .git, tmp
+
+[buck2]
+  materializations = deferred

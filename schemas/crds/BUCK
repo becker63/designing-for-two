@@ -1,0 +1,47 @@
+load("//rules/groups:crd_codegen_groups.bzl", "crd_codegen_from_tree")
+load("//rules/groups:kcl_codegen_groups.bzl", "kcl_codegen_from_tree")
+load("//rules/groups/frp_codegen_groups.bzl", "frp_codegen_groups")
+
+load("//rules:go-schema-kcl.bzl", "frp_schema_codegen")
+
+ALL_CRDS = glob(
+    [
+        "**/*.yaml",
+        "**/*.yml",
+    ],
+    exclude = [
+        "**/README.*",
+        "**/*.md",
+        "**/rbac*.yml",
+        "**/*example*",
+        "**/*whoami*",
+        "**/*gateway*",
+        "**/docker-labels*",
+        "**/file.*",
+    ],
+)
+
+
+PYTHON_GENERATORS = crd_codegen_from_tree(
+    name_prefix = "gen",
+    srcs = ALL_CRDS,
+    namespace_prefix = "generated.models",
+)
+
+KCL_GENERATORS = (
+    kcl_codegen_from_tree(srcs = ALL_CRDS)
+    + frp_codegen_groups()
+)
+
+
+filegroup(
+    name = "generated_python",
+    srcs = PYTHON_GENERATORS,
+    visibility = ["PUBLIC"],
+)
+
+filegroup(
+    name = "generated_kcl",
+    srcs = KCL_GENERATORS,
+    visibility = ["PUBLIC"],
+)

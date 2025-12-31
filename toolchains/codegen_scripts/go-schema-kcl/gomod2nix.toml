@@ -1,0 +1,39 @@
+schema = 3
+
+[mod]
+  [mod."github.com/alecthomas/kong"]
+    version = "v1.13.0"
+    hash = "sha256-9nSlldkif002WKjCIRBUmTofdtSL16V9NUZZ1PD34c0="
+  [mod."github.com/bahlo/generic-list-go"]
+    version = "v0.2.0"
+    hash = "sha256-BIzqwG61hnMDknZOn/5+VX09yemzFzMjhPF48XoALto="
+  [mod."github.com/buger/jsonparser"]
+    version = "v1.1.1"
+    hash = "sha256-T6dXT6Vzpm8gvQYi+c2LZkV+8ZOp0ZXBX7+e1mlliZE="
+  [mod."github.com/fatedier/frp"]
+    version = "v0.65.0"
+    hash = "sha256-otzzBBd/XABe+h7nZIw0kUsgZgX2XRo4+Tx7Fq/64ro="
+  [mod."github.com/fatedier/golib"]
+    version = "v0.5.1"
+    hash = "sha256-EWkKkk7SFeo3sdK+5ngsJS8vupWWcxmG85B5HOA2jKY="
+  [mod."github.com/invopop/jsonschema"]
+    version = "v0.13.0"
+    hash = "sha256-Fe4DQDJQxy5i8cgJY6dFbraTnfG/C2D3cB1Q5p2QxVc="
+  [mod."github.com/kr/text"]
+    version = "v0.2.0"
+    hash = "sha256-fadcWxZOORv44oak3jTxm6YcITcFxdGt4bpn869HxUE="
+  [mod."github.com/mailru/easyjson"]
+    version = "v0.7.7"
+    hash = "sha256-NVCz8MURpxgOjHXqxOZExqV4bnpHggpeAOyZDArjcy4="
+  [mod."github.com/samber/lo"]
+    version = "v1.47.0"
+    hash = "sha256-jMXexVTlPdZ40STRpBLv7b+BIRqdxxra12Pl2Mj7Nz8="
+  [mod."github.com/wk8/go-ordered-map/v2"]
+    version = "v2.1.8"
+    hash = "sha256-v7/5+7lAypZfgClXgWxhxtA1skQq9o+1yrI+V0o1j2o="
+  [mod."golang.org/x/text"]
+    version = "v0.24.0"
+    hash = "sha256-qFbmteGOvJfvbLXiOSI8Fsz5Ixt2ZhSYx0/sIqApC7Y="
+  [mod."gopkg.in/yaml.v3"]
+    version = "v3.0.1"
+    hash = "sha256-FqL9TKYJ0XkNwJFnq9j0VvJ5ZUU1RvH/52h/f5bkYAU="
