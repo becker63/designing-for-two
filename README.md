@@ -4,7 +4,9 @@ This repository contains infrastructure configuration for a small home / edge ne
 
 If you don’t already have Nix installed, follow the official installer:
 
+```sh
 curl -L https://nixos.org/nix/install | sh
+```
 
 After installation, restart your shell and ensure flakes are enabled.
 
@@ -12,6 +14,8 @@ After installation, restart your shell and ensure flakes are enabled.
 
 From the repository root:
 
+```sh
 nix develop
+```
 
 This will provision all required toolchains, run all schema and code generation steps, and leave you in a ready-to-use shell. No additional setup is required.
