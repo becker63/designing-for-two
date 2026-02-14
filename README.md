@@ -1,73 +1,80 @@
-# Hermetic Control Plane
+# static-control-plane
 
-## Overview
+A reproducible, GitOps-driven Kubernetes control plane built with:
 
-This repository contains a fully reproducible, GitOps-driven control plane built with:
+- [Crossplane](https://crossplane.io/)
+- KCL compositions
+- [FluxCD](https://fluxcd.io/)
+- [Infisical](https://infisical.com/)
+- Nix flakes
+- Buck2-based code generation
+- Structural tests over rendered configuration
 
-- **Kubernetes + Crossplane**
-- **KCL-based compositions**
-- **FluxCD**
-- **Nix flakes**
-- **Buck2 for hermetic code generation**
-- **Typed model generation for CRDs**
-- **Structural tests over rendered configuration**
-
-The goal is not just to provision infrastructure — but to treat infrastructure configuration as a **typed, testable, reproducible artifact**.
+This repository explores treating infrastructure configuration as a build artifact: typed, testable, and reproducible.
 
 ---
 
-## Design Thesis
+## What This Is
 
-This project explores a simple question:
+This is an experimental Kubernetes control plane built around three ideas:
 
-> What if infrastructure composition behaved more like a compiler pipeline than a collection of YAML files?
+1. Infrastructure is a compilation target.
+2. Configuration should be typed and testable.
+3. Reconciliation boundaries should be explicit.
 
-Instead of manually stitching CRDs and Helm charts together, this repository:
+It uses:
 
-- Generates typed Python models from CRDs
-- Generates KCL schemas from CRDs and Go types
-- Executes KCL compositions as structured programs
-- Tests rendered outputs structurally
-- Ensures reproducibility through Nix and Buck2
+- **Crossplane** in function-pipeline mode
+- **KCL** for composition logic
+- **FluxCD** for GitOps delivery
+- **Infisical** for secret materialization
+- Hermetic schema generation using Buck2 and Nix
+- Tests that operate on rendered resource graphs
 
-The control plane is treated as a **build artifact**, not as mutable cluster state.
+It is not production hardened. It is a design experiment.
 
 ---
 
-## Architecture
+## High-Level Architecture
 
-### 1. KCL-Based Composition
+### 1. Composition with KCL (Crossplane Function Pipeline)
 
-Compositions are written in KCL and executed via Crossplane’s function pipeline mode.
-
-Example: DigitalOcean droplet + DNS + custom image composition.
+Compositions are written in KCL and executed inside Crossplane’s function-pipeline mode.
 
 Each function:
+
 - Reads observed composed resources (OCDS)
 - Emits new resources conditionally
-- Treats readiness and lifecycle explicitly
+- Encodes readiness explicitly
+- Produces deterministic output
 
-This makes reconciliation behavior legible and testable.
+KCL is treated as a constrained configuration language.  
+It evaluates to Kubernetes manifests — or fails.
+
+There is no runtime scripting inside reconciliation.
 
 ---
 
-### 2. Hermetic Code Generation (Buck2 + Nix)
+### 2. Hermetic Code Generation
 
-CRDs are not manually wrapped.
+CRDs and upstream schemas are not manually wrapped.
 
 Instead:
 
 - CRDs → Python models via `python-crd-cloudcoil`
 - CRDs → KCL schemas via `kcl import -m crd`
-- FRP Go structs → JSON Schema → KCL schemas via custom Go tool
+- FRP Go structs → JSON Schema → KCL schemas via a custom Go tool
 
 All generation:
-- Runs inside Buck2
+
+- Runs through Buck2
 - Uses Nix-pinned toolchains
 - Produces deterministic output
-- Is not committed to git (reproducible from source)
+- Is intentionally not committed to Git
 
-This eliminates schema drift.
+Schemas can be regenerated from source at any time.
+
+Infrastructure schema is reproducible.
 
 ---
 
@@ -75,12 +82,14 @@ This eliminates schema drift.
 
 The `lib/` directory contains:
 
-- A KCL execution runtime wrapper
-- A lightweight override system for test scenarios
-- A pytest integration layer
+- A minimal KCL execution wrapper
+- A small override system for test scenarios
+- Pytest integration
 - Typed resource matching using Cloudcoil models
 
-Tests operate on rendered resource graphs, not just text.
+Tests operate on rendered resource graphs rather than raw YAML strings.
+
+This shifts validation from string matching to structural guarantees.
 
 ---
 
@@ -89,48 +98,73 @@ Tests operate on rendered resource graphs, not just text.
 Tests verify:
 
 - Required exports exist
-- Helm releases are valid
-- FRP configs pass `verify`
-- Grouped KCL files behave correctly
+- Helm releases render correctly
+- FRP configs pass native `verify`
+- Groups of KCL files behave as expected
 
-This treats configuration as something that can regress.
+Configuration is treated as something that can regress.
+
+Rendered infrastructure is testable.
 
 ---
 
 ### 5. GitOps Delivery
 
-FluxCD is used to:
+GitOps delivery is handled by [FluxCD](https://fluxcd.io/).
 
-- Sync this repository into cluster state
-- Install Crossplane
-- Install Helm-based dependencies
-- Manage secret injection via Infisical
+Flux:
 
-The cluster bootstraps from the repo.
+- Reconciles this repository into Kubernetes cluster state
+- Installs [Crossplane](https://crossplane.io/) controllers
+- Applies Helm releases and CRDs
+- Deploys the [Infisical](https://infisical.com/) Kubernetes operator
+
+Crossplane performs infrastructure reconciliation.
+
+Infisical materializes secrets for workloads.
+
+Flux’s role is strictly declarative state convergence.
+
+Control loop layering:
+
+Git → Flux → Controllers (Crossplane, Infisical) → Kubernetes resources
+
+The cluster bootstraps entirely from Git.
 
 ---
 
 ## What This Demonstrates
 
-This project signals experience in:
+This project reflects experience with:
 
 - Crossplane composition design
 - Function-pipeline mode
 - KCL as a configuration language
 - CRD introspection and schema tooling
-- Reproducible build systems (Nix + Buck2)
-- Infrastructure code generation
+- Nix-based reproducible environments
+- Buck2 build rules
 - Typed Kubernetes resource modeling
-- Structural testing of infra artifacts
-- GitOps workflow design
+- Structural testing of infrastructure artifacts
+- GitOps workflows
+- Control-plane boundary design
 
-It is intentionally opinionated and non-trivial.
+It is intentionally opinionated.
 
 ---
 
 ## Development
 
-Install Nix and enter the shell:
+Install Nix, then:
 
 ```bash
 nix develop
+```
+
+This provisions all toolchains and runs required schema generation.
+
+From there:
+
+```bash
+buck2 build //...
+pytest
+```
