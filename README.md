@@ -1,170 +1,152 @@
 # static-control-plane
 
-A reproducible, GitOps-driven Kubernetes control plane built with:
+Crossplane-based Kubernetes control plane that provisions a NixOS-backed FRP gateway on DigitalOcean, reconciles DNS records, and deploys cluster infrastructure via GitOps.
 
-- [Crossplane](https://crossplane.io/)
-- KCL compositions
-- [FluxCD](https://fluxcd.io/)
-- [Infisical](https://infisical.com/)
+---
+
+## What It Does
+
+- Provisions a custom NixOS VM image in DigitalOcean via Crossplane.
+- Creates and manages Droplets using Crossplane pipeline-mode compositions.
+- Conditionally reconciles DNS records once Droplet IPs are available.
+- Deploys FRP client as a Kubernetes DaemonSet to expose services behind NAT.
+- Installs and manages Crossplane, FluxCD, Traefik, cert-manager, and Infisical via HelmRelease resources.
+- Uses GitOps (FluxCD) to converge cluster state from this repository.
+- Validates rendered KCL output using structural pytest tests and native `frpc/frps verify`.
+
+This repository represents a full Git → Cluster → Cloud reconciliation flow.
+
+---
+
+## Architecture Overview
+
+```
+                ┌──────────────────────────┐
+                │        Git Repo          │
+                │  (this repository)       │
+                └────────────┬─────────────┘
+                             │
+                             ▼
+                       ┌───────────┐
+                       │  FluxCD   │
+                       └─────┬─────┘
+                             │
+                             ▼
+                     ┌───────────────┐
+                     │   Kubernetes   │
+                     │   Control Plane│
+                     └─────┬─────────┘
+                           │
+                           ▼
+                     ┌───────────────┐
+                     │  Crossplane    │
+                     │  (Pipeline)    │
+                     └─────┬─────────┘
+                           │
+            ┌──────────────┴──────────────┐
+            ▼                             ▼
+     DigitalOcean                    Kubernetes
+   (Image, Droplet, DNS)         (FRP, Traefik, TLS,
+                                  Infisical, etc.)
+```
+
+Flow:
+
+1. Flux reconciles this repo into the cluster.
+2. Crossplane executes KCL pipeline functions.
+3. Custom NixOS image → Droplet → DNS records.
+4. FRP server runs on VPS.
+5. FRP client runs inside cluster to expose services behind NAT.
+
+---
+
+## Crossplane Composition Design
+
+The DigitalOcean composition uses Crossplane **pipeline mode** with KCL functions:
+
+- `image.k` → creates custom image resource.
+- `droplet.k` → waits for image readiness, provisions Droplet.
+- `dns.k` → waits for Droplet IP, provisions DNS records.
+
+Each step:
+
+- Reads observed composed resources (OCDS).
+- Emits new resources conditionally.
+- Avoids runtime scripting inside reconciliation.
+
+This models real dependency ordering inside infrastructure provisioning.
+
+---
+
+## Reproducible Tooling
+
+CRDs and schemas are not hand-written.
+
+Generation pipeline:
+
+- CRDs → Python models via custom `python-crd-cloudcoil`.
+- CRDs → KCL schemas via `kcl import -m crd`.
+- FRP Go structs → JSON Schema → KCL schemas via custom Go codegen.
+- All tooling is Nix-pinned and invoked via Buck2.
+- Generated sources are reproducible and not committed.
+
+This enables typed validation of infrastructure artifacts.
+
+---
+
+## Testing Strategy
+
+Tests operate on rendered KCL output, not raw YAML strings.
+
+They verify:
+
+- Required exports exist.
+- HelmRelease objects render correctly.
+- FRP configurations pass native `verify` commands.
+- Grouped configuration files behave consistently.
+
+Infrastructure is treated as something that can regress.
+
+---
+
+## Tech Stack
+
+- Kubernetes
+- Crossplane (pipeline mode)
+- KCL
+- DigitalOcean Provider
+- FluxCD
+- Traefik
+- cert-manager
+- Infisical
+- FRP
 - Nix flakes
-- Buck2-based code generation
-- Structural tests over rendered configuration
-
-This repository explores treating infrastructure configuration as a build artifact: typed, testable, and reproducible.
-
----
-
-## What This Is
-
-This is an experimental Kubernetes control plane built around three ideas:
-
-1. Infrastructure is a compilation target.
-2. Configuration should be typed and testable.
-3. Reconciliation boundaries should be explicit.
-
-It uses:
-
-- **Crossplane** in function-pipeline mode
-- **KCL** for composition logic
-- **FluxCD** for GitOps delivery
-- **Infisical** for secret materialization
-- Hermetic schema generation using Buck2 and Nix
-- Tests that operate on rendered resource graphs
-
-It is not production hardened. It is a design experiment.
+- Buck2
+- pytest
+- Cloudcoil (typed resource validation)
 
 ---
 
-## High-Level Architecture
+## Why This Is Interesting
 
-### 1. Composition with KCL (Crossplane Function Pipeline)
+This project demonstrates:
 
-Compositions are written in KCL and executed inside Crossplane’s function-pipeline mode.
+- Conditional resource generation inside Crossplane pipeline mode.
+- Real cloud infrastructure provisioning (DigitalOcean image + Droplet + DNS).
+- GitOps-based control plane layering.
+- Reproducible schema tooling for CRDs and external systems.
+- Structural testing of rendered infrastructure resources.
 
-Each function:
-
-- Reads observed composed resources (OCDS)
-- Emits new resources conditionally
-- Encodes readiness explicitly
-- Produces deterministic output
-
-KCL is treated as a constrained configuration language.  
-It evaluates to Kubernetes manifests — or fails.
-
-There is no runtime scripting inside reconciliation.
-
----
-
-### 2. Hermetic Code Generation
-
-CRDs and upstream schemas are not manually wrapped.
-
-Instead:
-
-- CRDs → Python models via `python-crd-cloudcoil`
-- CRDs → KCL schemas via `kcl import -m crd`
-- FRP Go structs → JSON Schema → KCL schemas via a custom Go tool
-
-All generation:
-
-- Runs through Buck2
-- Uses Nix-pinned toolchains
-- Produces deterministic output
-- Is intentionally not committed to Git
-
-Schemas can be regenerated from source at any time.
-
-Infrastructure schema is reproducible.
-
----
-
-### 3. Typed Execution Layer
-
-The `lib/` directory contains:
-
-- A minimal KCL execution wrapper
-- A small override system for test scenarios
-- Pytest integration
-- Typed resource matching using Cloudcoil models
-
-Tests operate on rendered resource graphs rather than raw YAML strings.
-
-This shifts validation from string matching to structural guarantees.
-
----
-
-### 4. Structural Tests
-
-Tests verify:
-
-- Required exports exist
-- Helm releases render correctly
-- FRP configs pass native `verify`
-- Groups of KCL files behave as expected
-
-Configuration is treated as something that can regress.
-
-Rendered infrastructure is testable.
-
----
-
-### 5. GitOps Delivery
-
-GitOps delivery is handled by [FluxCD](https://fluxcd.io/).
-
-Flux:
-
-- Reconciles this repository into Kubernetes cluster state
-- Installs [Crossplane](https://crossplane.io/) controllers
-- Applies Helm releases and CRDs
-- Deploys the [Infisical](https://infisical.com/) Kubernetes operator
-
-Crossplane performs infrastructure reconciliation.
-
-Infisical materializes secrets for workloads.
-
-Flux’s role is strictly declarative state convergence.
-
-Control loop layering:
-
-Git → Flux → Controllers (Crossplane, Infisical) → Kubernetes resources
-
-The cluster bootstraps entirely from Git.
-
----
-
-## What This Demonstrates
-
-This project reflects experience with:
-
-- Crossplane composition design
-- Function-pipeline mode
-- KCL as a configuration language
-- CRD introspection and schema tooling
-- Nix-based reproducible environments
-- Buck2 build rules
-- Typed Kubernetes resource modeling
-- Structural testing of infrastructure artifacts
-- GitOps workflows
-- Control-plane boundary design
-
-It is intentionally opinionated.
+It is not a demo YAML collection — it is a full reconciliation system from Git to cloud resources.
 
 ---
 
 ## Development
 
-Install Nix, then:
+Requires Nix.
 
 ```bash
 nix develop
 ```
 
-This provisions all toolchains and runs required schema generation.
-
-From there:
-
-```bash
-buck2 build //...
-pytest
-```
+All schemas and toolchains are pinned via flakes.
